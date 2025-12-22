@@ -10,7 +10,7 @@ Then transfer the models directory to your air-gapped system
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.config import config
 from src.embedding import download_model_for_offline_use
