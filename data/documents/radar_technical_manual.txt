@@ -1,0 +1,62 @@
+[CLASSIFICATION: CONFIDENTIAL]
+RADAR SYSTEM TECHNICAL MANUAL
+Model: AN/SPY-7 Maritime Surveillance Radar
+Version: 3.2
+
+1. SYSTEM OVERVIEW
+The AN/SPY-7 is an advanced multi-function radar system designed for long-range surveillance and tracking. It operates in S-band frequency range and provides 360-degree coverage.
+
+2. SPECIFICATIONS
+   - Frequency Range: 2.9 - 3.1 GHz (S-band)
+   - Maximum Range: 400 km (surface targets), 500 km (air targets)
+   - Angular Coverage: 360 degrees (azimuth), 90 degrees (elevation)
+   - Tracking Capacity: 1000+ simultaneous targets
+   - Resolution: 10 meters (range), 1 degree (angle)
+   - Power Output: 25 kW peak, 5 kW average
+
+3. OPERATING MODES
+   A. Surveillance Mode
+      - Wide-area scanning
+      - Automatic target detection
+      - Track initiation and maintenance
+   
+   B. Tracking Mode
+      - Precision target tracking
+      - Velocity measurement via Doppler
+      - Classification support
+   
+   C. Identification Mode
+      - IFF (Identification Friend or Foe) interrogation
+      - Secondary radar correlation
+
+4. MAINTENANCE PROCEDURES
+   Daily Checks:
+   - Transmitter power output verification
+   - Receiver noise level measurement
+   - Antenna rotation test
+   - Cooling system inspection
+   
+   Weekly Checks:
+   - Calibration verification
+   - Signal processing unit diagnostics
+   - Data link connectivity test
+   
+   Monthly Checks:
+   - Full system calibration
+   - Software updates installation
+   - Backup power system test
+
+5. TROUBLESHOOTING
+   Common Issues:
+   - Low power output: Check transmitter tubes, inspect waveguide
+   - Intermittent targets: Verify antenna alignment, check signal processing
+   - No detection: Confirm receiver operation, inspect RF components
+
+6. SAFETY WARNINGS
+   - Maximum RF exposure limits must be observed
+   - Personnel must maintain 50-meter safety distance during operation
+   - Use proper personal protective equipment in high RF areas
+   - Emergency shutdown procedures must be known by all operators
+
+CLASSIFICATION: CONFIDENTIAL
+This manual is for authorized personnel only.
