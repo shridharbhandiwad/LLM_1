@@ -9,10 +9,8 @@ from pathlib import Path
 from typing import List, Union, Optional
 import os
 
-# Disable all network access and telemetry
-os.environ["TRANSFORMERS_OFFLINE"] = "1"
-os.environ["HF_DATASETS_OFFLINE"] = "1"
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
+# Note: Offline mode is set per-function, not at module level
+# This allows the download function to work while keeping operations offline
 
 try:
     from sentence_transformers import SentenceTransformer
@@ -44,6 +42,11 @@ class OfflineEmbeddingGenerator:
                 "sentence-transformers not installed. "
                 "Install offline with: pip install sentence-transformers --no-index"
             )
+        
+        # Enable offline mode for operations
+        os.environ["TRANSFORMERS_OFFLINE"] = "1"
+        os.environ["HF_DATASETS_OFFLINE"] = "1"
+        os.environ["TOKENIZERS_PARALLELISM"] = "false"
         
         self.model_path = Path(model_path)
         self.device = device
@@ -221,14 +224,31 @@ def download_model_for_offline_use(model_name: str, target_path: Path):
     if SentenceTransformer is None:
         raise ImportError("sentence-transformers not installed")
     
-    logger.info(f"Downloading model {model_name} to {target_path}")
+    # IMPORTANT: Temporarily enable online mode for downloading
+    # Save current values
+    old_transformers_offline = os.environ.get("TRANSFORMERS_OFFLINE")
+    old_hf_datasets_offline = os.environ.get("HF_DATASETS_OFFLINE")
     
-    # Download model (requires internet)
-    model = SentenceTransformer(model_name)
-    
-    # Save to target path
-    target_path.mkdir(parents=True, exist_ok=True)
-    model.save(str(target_path))
-    
-    logger.info(f"Model saved to {target_path}")
-    logger.info("Transfer this directory to your air-gapped system")
+    try:
+        # Enable online mode
+        os.environ.pop("TRANSFORMERS_OFFLINE", None)
+        os.environ.pop("HF_DATASETS_OFFLINE", None)
+        
+        logger.info(f"Downloading model {model_name} to {target_path}")
+        
+        # Download model (requires internet)
+        model = SentenceTransformer(model_name)
+        
+        # Save to target path
+        target_path.mkdir(parents=True, exist_ok=True)
+        model.save(str(target_path))
+        
+        logger.info(f"Model saved to {target_path}")
+        logger.info("Transfer this directory to your air-gapped system")
+        
+    finally:
+        # Restore offline mode
+        if old_transformers_offline is not None:
+            os.environ["TRANSFORMERS_OFFLINE"] = old_transformers_offline
+        if old_hf_datasets_offline is not None:
+            os.environ["HF_DATASETS_OFFLINE"] = old_hf_datasets_offline
