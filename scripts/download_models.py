@@ -7,8 +7,14 @@ RUN THIS SCRIPT ON AN INTERNET-CONNECTED MACHINE
 Then transfer the models directory to your air-gapped system
 """
 
+import os
 import sys
 from pathlib import Path
+
+# IMPORTANT: Temporarily enable online mode for downloading
+# These will be re-enabled during normal operations
+os.environ["TRANSFORMERS_OFFLINE"] = "0"
+os.environ["HF_DATASETS_OFFLINE"] = "0"
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
