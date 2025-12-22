@@ -1,0 +1,1 @@
+{"timestamp": "2025-12-22T18:00:25.168109", "event_type": "query", "user_id": "analyst1", "classification": "SECRET", "details": {"query_length": 24, "retrieved_count": 0, "doc_ids": []}, "query_hash": "79d29340f2c32333dd8e57b8412aac3e293b21c548016245ba7c477c51fc3e05", "success": true}
