@@ -18,6 +18,43 @@ os.environ["HF_DATASETS_OFFLINE"] = "0"
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+
+def check_dependencies():
+    """Check if required packages are installed"""
+    missing_packages = []
+    
+    try:
+        import sentence_transformers
+    except ImportError:
+        missing_packages.append("sentence-transformers")
+    
+    try:
+        import transformers
+    except ImportError:
+        missing_packages.append("transformers")
+    
+    try:
+        import torch
+    except ImportError:
+        missing_packages.append("torch")
+    
+    if missing_packages:
+        print("\n" + "=" * 60)
+        print("MISSING DEPENDENCIES")
+        print("=" * 60)
+        print("\nThe following required packages are not installed:")
+        for pkg in missing_packages:
+            print(f"  - {pkg}")
+        print("\nPlease install dependencies first:")
+        print("  pip install -r requirements.txt")
+        print("\nOr install individually:")
+        print("  pip install torch sentence-transformers transformers")
+        print("\n" + "=" * 60)
+        return False
+    
+    return True
+
+
 from src.config import config
 from src.embedding import download_model_for_offline_use
 
@@ -87,7 +124,12 @@ def main():
     print("Then transfer the models directory to your air-gapped system.")
     print()
     
+    # Check dependencies first
+    if not check_dependencies():
+        return 1
+    
     # Create model directories
+    print(f"\nCreating directories at: {config.base_path}")
     config.create_directories()
     
     # Download embedding model

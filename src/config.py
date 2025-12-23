@@ -38,10 +38,11 @@ class SystemConfig:
     environment: Environment = Environment.PRODUCTION
     
     # Paths (all must be local)
-    base_path: Path = Path("/workspace")
-    model_path: Path = Path("/workspace/models")
-    data_path: Path = Path("/workspace/data")
-    log_path: Path = Path("/workspace/logs")
+    # Use paths relative to project root (works on both Unix and Windows)
+    base_path: Path = Path(__file__).parent.parent.resolve()
+    model_path: Path = Path(__file__).parent.parent.resolve() / "models"
+    data_path: Path = Path(__file__).parent.parent.resolve() / "data"
+    log_path: Path = Path(__file__).parent.parent.resolve() / "logs"
     
     # Embedding Model
     embedding_model_name: str = "all-MiniLM-L6-v2"
@@ -134,8 +135,10 @@ class SystemConfig:
         
         for dir_path in dirs:
             dir_path.mkdir(parents=True, exist_ok=True)
-            # Secure permissions: owner only
-            os.chmod(dir_path, 0o700)
+            # Secure permissions: owner only (Unix-like systems only)
+            # Windows doesn't use Unix permissions, so skip on Windows
+            if os.name != 'nt':
+                os.chmod(dir_path, 0o700)
 
 
 def load_config() -> SystemConfig:

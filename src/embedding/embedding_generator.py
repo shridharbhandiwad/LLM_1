@@ -222,7 +222,13 @@ def download_model_for_offline_use(model_name: str, target_path: Path):
         target_path: Local path to save model
     """
     if SentenceTransformer is None:
-        raise ImportError("sentence-transformers not installed")
+        raise ImportError(
+            "sentence-transformers package is not installed.\n"
+            "\nPlease install dependencies first:\n"
+            "  pip install -r requirements.txt\n"
+            "\nOr install sentence-transformers directly:\n"
+            "  pip install sentence-transformers\n"
+        )
     
     # IMPORTANT: Temporarily enable online mode for downloading
     # Save current values

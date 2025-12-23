@@ -28,7 +28,20 @@ A complete **offline, air-gapped LLM-RAG (Retrieval Augmented Generation) system
 
 ## QUICK START
 
-### On Internet-Connected Machine:
+### Windows Users
+
+See **[WINDOWS_SETUP.md](WINDOWS_SETUP.md)** for detailed Windows installation instructions.
+
+Quick start for Windows:
+```bash
+pip install -r requirements.txt
+python scripts/download_models.py
+python main.py
+```
+
+### Linux/Mac Users
+
+#### On Internet-Connected Machine:
 
 ```bash
 # Download dependencies and models
@@ -39,7 +52,7 @@ python scripts/download_models.py
 tar -czf rag-system-offline.tar.gz .
 ```
 
-### On Air-Gapped Machine:
+#### On Air-Gapped Machine:
 
 ```bash
 # Install and configure
