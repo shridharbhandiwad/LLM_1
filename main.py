@@ -6,8 +6,19 @@ Defense-grade air-gapped AI system
 
 import logging
 import sys
+import os
 from pathlib import Path
 from typing import Optional
+
+# Configure UTF-8 encoding for Windows console output
+if sys.platform == "win32":
+    # Set console output to UTF-8 on Windows
+    try:
+        import io
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+    except Exception:
+        pass  # If this fails, we'll fall back to default encoding
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent / "src"))
@@ -27,7 +38,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler(config.log_path / "system.log"),
+        logging.FileHandler(config.log_path / "system.log", encoding='utf-8'),
         logging.StreamHandler()
     ]
 )
@@ -118,7 +129,8 @@ class OfflineRAGSystem:
         self.vector_store = EncryptedVectorStore(
             dimension=self.config.embedding_dimension,
             index_path=self.config.vector_db_path,
-            encryption_key=None  # Will generate new key
+            encryption_key=None,  # Will load from disk or generate new
+            key_path=self.config.encryption_key_path
         )
         
         # Try to load existing index
@@ -127,6 +139,9 @@ class OfflineRAGSystem:
             logger.info(f"[OK] Loaded existing index: {self.vector_store.index.ntotal} vectors")
         except FileNotFoundError:
             logger.info("No existing index found. Will create new index.")
+        except RuntimeError as e:
+            logger.error(f"Failed to load vector store: {e}")
+            raise
         
         # Initialize metadata database
         logger.info("Initializing metadata database...")

@@ -7,6 +7,15 @@ Run this to verify the setup is correct
 import sys
 from pathlib import Path
 
+# Configure UTF-8 encoding for Windows console output
+if sys.platform == "win32":
+    try:
+        import io
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
 def test_imports():
     """Test that basic imports work"""
     print("Testing imports...")

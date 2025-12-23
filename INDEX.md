@@ -41,6 +41,15 @@
 | [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md) | 17KB | ~800 | Complete project summary and achievements |
 | [README.md](README.md) | 2.3KB | ~130 | Quick start guide |
 
+### Windows-Specific Documentation
+
+| Document | Purpose |
+|----------|---------|
+| [FIX_SUMMARY.md](FIX_SUMMARY.md) | Quick reference for Windows Unicode and encryption fixes |
+| [WINDOWS_UNICODE_AND_ENCRYPTION_FIX.md](WINDOWS_UNICODE_AND_ENCRYPTION_FIX.md) | Detailed technical documentation of fixes |
+| [WINDOWS_SETUP.md](WINDOWS_SETUP.md) | Windows setup guide |
+| [test_windows_fix.py](test_windows_fix.py) | Automated test suite for Windows fixes |
+
 ### Key Sections
 
 #### ARCHITECTURE.md
@@ -413,6 +422,33 @@ python -c "from src.security import NetworkIsolationVerifier; NetworkIsolationVe
 LLM_CONTEXT_LENGTH=2048
 ```
 
+#### Windows: Unicode Encoding Error
+```
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2713'
+```
+
+**Solution:** This has been fixed in the latest code. If you still see this error:
+1. Pull the latest code from the repository
+2. See [FIX_SUMMARY.md](FIX_SUMMARY.md) for details
+
+#### Windows: Vector Store Decryption Error
+```
+cryptography.exceptions.InvalidTag
+```
+
+**Solution:** Encryption key mismatch. Options:
+```bash
+# Option 1: Start fresh (easiest)
+del data\vectors\*.enc
+del data\keys\master.key
+python main.py
+
+# Option 2: Test the fix
+python test_windows_fix.py
+```
+
+See [FIX_SUMMARY.md](FIX_SUMMARY.md) for detailed explanation.
+
 See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for detailed troubleshooting.
 
 ---
@@ -560,6 +596,14 @@ Total:           4,020 lines
 
 ## VERSION HISTORY
 
+**v1.1 (2025-12-23)** - Windows Compatibility Fix
+- Fixed Unicode encoding errors on Windows console
+- Implemented encryption key persistence
+- Added graceful decryption error handling
+- UTF-8 support for all Python scripts
+- Comprehensive test suite for Windows fixes
+- See [FIX_SUMMARY.md](FIX_SUMMARY.md) for details
+
 **v1.0 (2025-12-22)** - Initial Release
 - Complete offline RAG system
 - Defense-grade security
@@ -598,6 +642,9 @@ python example_usage.py
 
 # Run tests
 pytest tests/ -v
+
+# Test Windows fixes
+python test_windows_fix.py
 
 # Verify security
 python -c "from src.security import NetworkIsolationVerifier; NetworkIsolationVerifier.verify_all()"

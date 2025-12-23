@@ -215,7 +215,8 @@ class EncryptedVectorStore(VectorStore):
     """
     
     def __init__(self, dimension: int, index_path: Optional[Path] = None,
-                 encryption_key: Optional[bytes] = None):
+                 encryption_key: Optional[bytes] = None,
+                 key_path: Optional[Path] = None):
         """
         Initialize encrypted vector store
         
@@ -223,14 +224,40 @@ class EncryptedVectorStore(VectorStore):
             dimension: Embedding dimension
             index_path: Path to save/load index
             encryption_key: 32-byte encryption key (AES-256)
+            key_path: Path to save/load encryption key
         """
         super().__init__(dimension, index_path)
         
+        self.key_path = key_path
+        
+        # Try to load existing key from disk
+        if encryption_key is None and key_path is not None and key_path.exists():
+            try:
+                with open(key_path, 'rb') as f:
+                    encryption_key = f.read()
+                logger.info(f"Loaded encryption key from {key_path}")
+            except Exception as e:
+                logger.error(f"Failed to load encryption key: {e}")
+        
         if encryption_key is None:
-            # Generate key if not provided
+            # Generate key if not provided and not on disk
             import secrets
             encryption_key = secrets.token_bytes(32)
             logger.warning("Generated new encryption key. Save this securely!")
+            
+            # Save the key to disk if path provided
+            if key_path is not None:
+                try:
+                    key_path.parent.mkdir(parents=True, exist_ok=True)
+                    with open(key_path, 'wb') as f:
+                        f.write(encryption_key)
+                    # Set secure permissions on Unix-like systems
+                    import os
+                    if os.name != 'nt':
+                        os.chmod(key_path, 0o600)
+                    logger.info(f"Saved encryption key to {key_path}")
+                except Exception as e:
+                    logger.error(f"Failed to save encryption key: {e}")
         
         if len(encryption_key) != 32:
             raise ValueError("Encryption key must be 32 bytes for AES-256")
@@ -304,25 +331,38 @@ class EncryptedVectorStore(VectorStore):
         if not index_file.exists():
             raise FileNotFoundError(f"Index file not found: {index_file}")
         
-        with open(index_file, 'rb') as f:
-            encrypted_index = f.read()
-        
-        index_bytes = self._decrypt(encrypted_index)
-        self.index = faiss.deserialize_index(index_bytes)
-        
-        # Load and decrypt metadata
-        metadata_file = load_path / "metadata.pkl.enc"
-        with open(metadata_file, 'rb') as f:
-            encrypted_metadata = f.read()
-        
-        metadata_bytes = self._decrypt(encrypted_metadata)
-        data = pickle.loads(metadata_bytes)
-        
-        self.metadata = data["metadata"]
-        self.chunk_ids = data["chunk_ids"]
-        self.dimension = data["dimension"]
-        
-        logger.info(f"Loaded encrypted index from {load_path}. Total vectors: {self.index.ntotal}")
+        try:
+            with open(index_file, 'rb') as f:
+                encrypted_index = f.read()
+            
+            index_bytes = self._decrypt(encrypted_index)
+            self.index = faiss.deserialize_index(index_bytes)
+            
+            # Load and decrypt metadata
+            metadata_file = load_path / "metadata.pkl.enc"
+            with open(metadata_file, 'rb') as f:
+                encrypted_metadata = f.read()
+            
+            metadata_bytes = self._decrypt(encrypted_metadata)
+            data = pickle.loads(metadata_bytes)
+            
+            self.metadata = data["metadata"]
+            self.chunk_ids = data["chunk_ids"]
+            self.dimension = data["dimension"]
+            
+            logger.info(f"Loaded encrypted index from {load_path}. Total vectors: {self.index.ntotal}")
+            
+        except Exception as e:
+            from cryptography.exceptions import InvalidTag
+            if isinstance(e, InvalidTag):
+                logger.error(f"Decryption failed: encryption key mismatch or corrupted data")
+                logger.error(f"To fix: Delete the encrypted index files in {load_path} or provide the correct key")
+                logger.info(f"You can delete: {index_file} and {load_path / 'metadata.pkl.enc'}")
+                raise RuntimeError("Vector store decryption failed. The encryption key doesn't match the stored data. "
+                                 "This may happen if the key file was regenerated. "
+                                 f"To start fresh, delete the encrypted files in {load_path}") from e
+            else:
+                raise
 
 
 class MetadataDatabase:
