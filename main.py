@@ -65,14 +65,14 @@ class OfflineRAGSystem:
             results = NetworkIsolationVerifier.verify_all()
             
             for check in results["checks"]:
-                status = "✓" if check["passed"] else "✗"
+                status = "[OK]" if check["passed"] else "[FAIL]"
                 logger.info(f"{status} {check['name']}: {check['details']}")
             
             if not results["all_passed"]:
                 logger.warning("Some security checks failed. Proceed with caution.")
                 return False
         
-        logger.info("✓ Security verification completed")
+        logger.info("[OK] Security verification completed")
         return True
     
     def initialize(self, skip_llm: bool = False):
@@ -106,7 +106,7 @@ class OfflineRAGSystem:
                 model_path=self.config.embedding_model_path,
                 device="cpu"
             )
-            logger.info("✓ Embedding generator ready")
+            logger.info("[OK] Embedding generator ready")
         except Exception as e:
             logger.error(f"Failed to initialize embedding generator: {e}")
             logger.info("To use the system, download the model first:")
@@ -124,14 +124,14 @@ class OfflineRAGSystem:
         # Try to load existing index
         try:
             self.vector_store.load()
-            logger.info(f"✓ Loaded existing index: {self.vector_store.index.ntotal} vectors")
+            logger.info(f"[OK] Loaded existing index: {self.vector_store.index.ntotal} vectors")
         except FileNotFoundError:
             logger.info("No existing index found. Will create new index.")
         
         # Initialize metadata database
         logger.info("Initializing metadata database...")
         self.metadata_db = MetadataDatabase(self.config.metadata_db_path)
-        logger.info("✓ Metadata database ready")
+        logger.info("[OK] Metadata database ready")
         
         # Initialize LLM
         if not skip_llm:
@@ -144,7 +144,7 @@ class OfflineRAGSystem:
                     temperature=self.config.llm_temperature,
                     max_tokens=self.config.llm_max_tokens
                 )
-                logger.info("✓ LLM ready")
+                logger.info("[OK] LLM ready")
             except Exception as e:
                 logger.error(f"Failed to initialize LLM: {e}")
                 logger.info("To use the system, download the model first:")
@@ -158,7 +158,7 @@ class OfflineRAGSystem:
             embedding_generator=self.embedding_generator,
             metadata_db=self.metadata_db
         )
-        logger.info("✓ Retriever ready")
+        logger.info("[OK] Retriever ready")
         
         # Initialize RAG pipeline
         if not skip_llm and self.llm:
@@ -169,7 +169,7 @@ class OfflineRAGSystem:
                 default_classification=self.config.default_classification,
                 enable_safety_filter=True
             )
-            logger.info("✓ RAG pipeline ready")
+            logger.info("[OK] RAG pipeline ready")
         
         self.initialized = True
         logger.info("=" * 60)
@@ -183,7 +183,7 @@ class OfflineRAGSystem:
         self.rbac.add_user("analyst_s", roles=["ANALYST_S"])
         self.rbac.add_user("operator", roles=["OPERATOR"])
         
-        logger.info("✓ Default users configured")
+        logger.info("[OK] Default users configured")
     
     def ingest_documents(self, document_path: Path, user_id: str = "admin"):
         """
@@ -231,15 +231,15 @@ class OfflineRAGSystem:
         # Add to vector store
         import numpy as np
         self.vector_store.add_vectors(np.array(embeddings), chunks)
-        logger.info("✓ Added to vector store")
+        logger.info("[OK] Added to vector store")
         
         # Add to metadata database
         self.metadata_db.insert_chunks(chunks)
-        logger.info("✓ Added to metadata database")
+        logger.info("[OK] Added to metadata database")
         
         # Save index
         self.vector_store.save()
-        logger.info("✓ Saved index")
+        logger.info("[OK] Saved index")
         
         # Audit log
         for doc in documents:
@@ -250,7 +250,7 @@ class OfflineRAGSystem:
                 success=True
             )
         
-        logger.info(f"✓ Ingestion complete: {len(documents)} documents, {len(chunks)} chunks")
+        logger.info(f"[OK] Ingestion complete: {len(documents)} documents, {len(chunks)} chunks")
     
     def query(self, query_text: str, user_id: str = "analyst_ts",
              top_k: Optional[int] = None) -> str:
@@ -304,7 +304,7 @@ class OfflineRAGSystem:
         if self.metadata_db:
             self.metadata_db.close()
         
-        logger.info("✓ System shutdown complete")
+        logger.info("[OK] System shutdown complete")
 
 
 def main():

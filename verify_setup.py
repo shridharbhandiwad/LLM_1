@@ -12,16 +12,16 @@ def test_imports():
     print("Testing imports...")
     try:
         from src.config import config
-        print("  ✓ Config module imported")
+        print("  [OK] Config module imported")
     except Exception as e:
-        print(f"  ✗ Config import failed: {e}")
+        print(f"  [FAIL] Config import failed: {e}")
         return False
     
     try:
         from src.embedding import download_model_for_offline_use
-        print("  ✓ Embedding module imported")
+        print("  [OK] Embedding module imported")
     except Exception as e:
-        print(f"  ✗ Embedding import failed: {e}")
+        print(f"  [FAIL] Embedding import failed: {e}")
         return False
     
     return True
@@ -41,14 +41,14 @@ def test_paths():
         
         # Verify paths are absolute and resolved
         if not config.base_path.is_absolute():
-            print("  ✗ Base path is not absolute")
+            print("  [FAIL] Base path is not absolute")
             return False
         
-        print("  ✓ All paths resolved correctly")
+        print("  [OK] All paths resolved correctly")
         return True
         
     except Exception as e:
-        print(f"  ✗ Path test failed: {e}")
+        print(f"  [FAIL] Path test failed: {e}")
         return False
 
 
@@ -68,9 +68,9 @@ def test_dependencies():
     for module, name in deps.items():
         try:
             __import__(module)
-            print(f"  ✓ {name} installed")
+            print(f"  [OK] {name} installed")
         except ImportError:
-            print(f"  ✗ {name} not installed")
+            print(f"  [FAIL] {name} not installed")
             missing.append(name)
     
     if missing:
@@ -99,15 +99,15 @@ def test_directory_creation():
         
         for dir_path in dirs_to_check:
             if not dir_path.exists():
-                print(f"  ✗ Directory not created: {dir_path}")
+                print(f"  [FAIL] Directory not created: {dir_path}")
                 return False
-            print(f"  ✓ Directory exists: {dir_path.name}")
+            print(f"  [OK] Directory exists: {dir_path.name}")
         
-        print("  ✓ All directories created successfully")
+        print("  [OK] All directories created successfully")
         return True
         
     except Exception as e:
-        print(f"  ✗ Directory creation failed: {e}")
+        print(f"  [FAIL] Directory creation failed: {e}")
         return False
 
 
@@ -132,19 +132,19 @@ def main():
     print("=" * 60)
     
     for test_name, passed in results:
-        status = "✓ PASS" if passed else "✗ FAIL"
+        status = "[PASS]" if passed else "[FAIL]"
         print(f"  {test_name}: {status}")
     
     all_passed = all(result[1] for result in results)
     
     if all_passed:
-        print("\n✓ All tests passed! Setup is correct.")
+        print("\n[OK] All tests passed! Setup is correct.")
         print("\nNext steps:")
         print("  1. Run: python scripts/download_models.py")
         print("  2. See WINDOWS_SETUP.md for more information")
         return 0
     else:
-        print("\n✗ Some tests failed. Please fix the issues above.")
+        print("\n[FAIL] Some tests failed. Please fix the issues above.")
         print("\nCommon fixes:")
         print("  - Install dependencies: pip install -r requirements.txt")
         print("  - Check file permissions")

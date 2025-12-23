@@ -74,10 +74,10 @@ def download_embedding_model():
     
     try:
         download_model_for_offline_use(model_name, target_path)
-        print("\n✓ Embedding model downloaded successfully")
+        print("\n[OK] Embedding model downloaded successfully")
         print(f"  Location: {target_path}")
     except Exception as e:
-        print(f"\n✗ Failed to download embedding model: {e}")
+        print(f"\n[FAIL] Failed to download embedding model: {e}")
         return False
     
     return True
@@ -136,7 +136,7 @@ def main():
     success = download_embedding_model()
     
     if not success:
-        print("\n✗ Model download failed")
+        print("\n[FAIL] Model download failed")
         return 1
     
     # LLM download instructions

@@ -127,7 +127,7 @@ def example_4_network_verification():
     print(f"Checks passed: {results['passed_count']}/{results['total_count']}\n")
     
     for check in results['checks']:
-        status = "✓" if check['passed'] else "✗"
+        status = "[OK]" if check['passed'] else "[FAIL]"
         print(f"{status} {check['name']}")
         print(f"  {check['details']}")
 

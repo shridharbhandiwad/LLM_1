@@ -172,9 +172,9 @@ class NetworkIsolationVerifier:
         }
         
         if results["all_passed"]:
-            logger.info("✓ All network isolation checks passed")
+            logger.info("[OK] All network isolation checks passed")
         else:
-            logger.warning(f"✗ Network isolation checks: {passed}/{total} passed")
+            logger.warning(f"[FAIL] Network isolation checks: {passed}/{total} passed")
         
         return results
     
