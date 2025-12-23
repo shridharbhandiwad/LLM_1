@@ -1,0 +1,81 @@
+================================================================================
+WINDOWS FIX - QUICK REFERENCE
+================================================================================
+
+PROBLEM: Model download script failing on Windows with path and dependency errors
+
+SOLUTION: Install dependencies first, then run the script
+
+================================================================================
+STEP 1: INSTALL DEPENDENCIES (REQUIRED!)
+================================================================================
+
+Open Command Prompt in your project directory and run:
+
+    pip install -r requirements.txt
+
+Wait for installation to complete (5-10 minutes)
+
+================================================================================
+STEP 2: DOWNLOAD MODELS
+================================================================================
+
+After dependencies are installed, run:
+
+    python scripts/download_models.py
+
+================================================================================
+STEP 3: VERIFY (OPTIONAL)
+================================================================================
+
+Test that everything is set up correctly:
+
+    python verify_setup.py
+
+================================================================================
+WHAT WAS FIXED?
+================================================================================
+
+✅ Path handling - Now works on Windows, Linux, and macOS
+✅ Dependency checking - Clear error messages if packages missing
+✅ Windows compatibility - Handles Windows-specific issues
+✅ Better errors - Tells you exactly how to fix problems
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+Error: "sentence-transformers not installed"
+→ Solution: pip install -r requirements.txt
+
+Error: "No module named 'torch'"
+→ Solution: pip install torch sentence-transformers transformers
+
+Error: Permission denied
+→ Solution: Run Command Prompt as Administrator
+
+Error: Path not found
+→ Solution: Make sure you're in the project directory (cd D:\Zoppler Projects\LLM_1)
+
+================================================================================
+DOCUMENTATION
+================================================================================
+
+📖 WINDOWS_SETUP.md       - Complete Windows setup guide (START HERE!)
+📖 FIX_COMPLETE.md         - What was fixed and how to use
+📖 WINDOWS_FIX_SUMMARY.md  - Technical details of the fixes
+📖 README.md               - General documentation
+
+================================================================================
+STILL HAVING ISSUES?
+================================================================================
+
+1. Check you have Python 3.8+:     python --version
+2. Check you're in project dir:    cd D:\Zoppler Projects\LLM_1
+3. Install dependencies:           pip install -r requirements.txt
+4. Run verification script:        python verify_setup.py
+5. Read WINDOWS_SETUP.md for detailed help
+
+================================================================================
+
+Your issue is now FIXED! Just install dependencies and run the script. 🎉
